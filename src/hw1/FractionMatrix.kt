@@ -2,7 +2,12 @@ package hw1
 
 import java.math.BigInteger
 
-class FractionMatrix : Matrix<FractionMatrix, FractionMatrix.Fraction> {
+interface Getable<out V> {
+    fun determinant(): V
+    fun get(i: Int, j: Int): V
+}
+
+class FractionMatrix : Matrix<FractionMatrix, FractionMatrix.Fraction>, Getable<FractionMatrix.Fraction> {
 
     class Fraction {
         private val numerator: BigInteger
@@ -173,7 +178,9 @@ class FractionMatrix : Matrix<FractionMatrix, FractionMatrix.Fraction> {
 
     fun clone(): FractionMatrix = FractionMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
 
-    override operator fun set(i: Int, j: Int, value: Fraction) { values[i][j] = value }
+    override operator fun set(i: Int, j: Int, value: Fraction) {
+        values[i][j] = value
+    }
 
     override operator fun get(i: Int, j: Int): Fraction = Fraction(values[i][j])
 
@@ -200,36 +207,15 @@ class FractionMatrix : Matrix<FractionMatrix, FractionMatrix.Fraction> {
     private fun subMatrix(wx: Int, wy: Int): SubMatrix = SubMatrix(this, wx, wy, n - 1)
 
 
-    private class SubMatrix {
-        private val parentM: FractionMatrix?
-        private val parent: SubMatrix?
-        private val wx: Int
-        private val wy: Int
-        private val size: Int
+    private class SubMatrix(private val parent: Getable<Fraction>, private val wx: Int, private val wy: Int, private val size: Int) : Getable<Fraction> {
 
-        constructor(parent: FractionMatrix, wx: Int, wy: Int, size: Int) {
-            this.parentM = parent
-            this.parent = null
-            this.wx = wx
-            this.wy = wy
-            this.size = size
-        }
-
-        constructor(parent: SubMatrix, wx: Int, wy: Int, size: Int) {
-            this.parentM = null
-            this.parent = parent
-            this.wx = wx
-            this.wy = wy
-            this.size = size
-        }
-
-        private fun get(i: Int, j: Int): Fraction {
+        override fun get(i: Int, j: Int): Fraction {
             val x = if (i < wx) i else i + 1
             val y = if (j < wy) j else j + 1
-            return parentM?.get(x, y) ?: parent!!.get(x, y)
+            return  parent.get(x, y)
         }
 
-        fun determinant(): Fraction {
+        override fun determinant(): Fraction {
             if (size == 1) return get(0, 0)
             var result = Fraction()
             for (i in 0 until size) {
