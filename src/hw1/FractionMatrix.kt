@@ -1,6 +1,6 @@
 package hw1
 
-import java.math.BigInteger
+import java.util.*
 
 interface Getable<out V> {
     fun determinant(): V
@@ -110,6 +110,12 @@ class FractionMatrix : Matrix<FractionMatrix, Fraction>, Getable<Fraction> {
     private fun subMatrix(): SubMatrix = SubMatrix(this, n, n, n)
 
     private fun subMatrix(wx: Int, wy: Int): SubMatrix = SubMatrix(this, wx, wy, n - 1)
+    override fun hashCode(): Int {
+        var result = n
+        result = 31 * result + m
+        result = 31 * result + Arrays.hashCode(values)
+        return result
+    }
 
 
     private class SubMatrix(private val parent: Getable<Fraction>, private val wx: Int, private val wy: Int, private val size: Int) : Getable<Fraction> {
