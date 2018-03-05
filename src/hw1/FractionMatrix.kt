@@ -2,126 +2,7 @@ package hw1
 
 import java.math.BigInteger
 
-class FractionMatrix(private var n: Int, private var m: Int) : Matrix {
-    private var values = Array(n) { Array(m) { Fraction() } }
-
-    override fun plus(matrix: Matrix): Matrix = assign { it += matrix }
-
-    override fun minus(matrix: Matrix): Matrix = assign { it -= matrix }
-
-    override fun times(matrix: Matrix): Matrix = assign { it *= matrix }
-
-    private fun assign(v: (FractionMatrix) -> Unit): FractionMatrix {
-        val result = FractionMatrix(n, m)
-        result += this
-        v(result)
-        return result
-    }
-
-    override fun plusAssign(matrix: Matrix) {
-        val isFraction = matrix is FractionMatrix
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                values[i][j] += (if (isFraction) {
-                    (matrix as FractionMatrix).values[i][j]
-                } else {
-                    Fraction(matrix.get(i, j))
-                })
-            }
-        }
-    }
-
-    override fun minusAssign(matrix: Matrix) {
-        val isFraction = matrix is FractionMatrix
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                values[i][j] -= (if (isFraction) {
-                    (matrix as FractionMatrix).values[i][j]
-                } else {
-                    Fraction(matrix.get(i, j))
-                })
-            }
-        }
-    }
-
-    override fun timesAssign(matrix: Matrix) {
-        val nM = matrix.size().second
-        if (size().second != matrix.size().first) throw MatrixSizeException()
-        val isFraction = matrix is FractionMatrix
-        val nValues = Array(n) { Array(nM) { Fraction() } }
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                for (k in 0 until nM) {
-                    nValues[i][j] += (if (isFraction) {
-                        values[i][k] * (matrix as FractionMatrix).values[k][j]
-                    } else {
-                        values[i][k] * Fraction(matrix.get(k, j))
-                    })
-                }
-            }
-        }
-        values = nValues
-    }
-
-    override fun trans(): Matrix {
-        val result = FractionMatrix(m, n)
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                result.values[j][i] = values[i][j]
-            }
-        }
-        return result
-    }
-
-    override fun invert(): Matrix {
-        if (n != m) throw MatrixSizeException()
-        val result = FractionMatrix(n, m)
-        val d = determinantFraction()
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                val value = subMatrix(i, j).determinant() / d
-                if ((i + j) % 2 == 0) {
-                    result.values[i][j] = value
-                } else {
-                    result.values[i][j] = -value
-                }
-            }
-        }
-        return result.trans()
-    }
-
-    override fun set(i: Int, j: Int, value: Double) {
-        values[i][j] = Fraction(value)
-    }
-
-    fun setFraction(i: Int, j: Int, value: Fraction) {
-        values[i][j] = value
-    }
-
-    fun getFraction(i: Int, j: Int): Fraction = Fraction(values[i][j])
-
-    override fun get(i: Int, j: Int): Double = values[i][j].toDouble()
-
-    override fun change(i: Int, j: Int, change: (Double) -> Double) {
-        set(i, j, change(get(i, j)))
-    }
-
-    override fun determinant(): Double = determinantFraction().toDouble()
-
-    fun determinantFraction(): Fraction = subMatrix().determinant()
-
-    override fun size(): Pair<Int, Int> = Pair(n, m)
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is FractionMatrix) return false
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                if (getFraction(i, j) != other.getFraction(i, j))
-                    return false
-            }
-        }
-        return true
-    }
+class FractionMatrix : Matrix<FractionMatrix> {
 
     class Fraction {
         private val numerator: BigInteger
@@ -217,6 +98,112 @@ class FractionMatrix(private var n: Int, private var m: Int) : Matrix {
             return result
         }
     }
+
+    private val n: Int
+    private val m: Int
+
+    private val values: Array<Array<Fraction>>
+
+    constructor(n: Int, m: Int, values: Array<Array<Fraction>>) {
+        this.n = n
+        this.m = m
+        this.values = values
+    }
+
+    constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> Fraction() }) }));
+
+
+    private fun apply(matrix: FractionMatrix, function: (Pair<Fraction, Fraction>) -> Fraction): FractionMatrix {
+        if (n != matrix.n || m != matrix.m) throw MatrixSizeException()
+
+        return FractionMatrix(n, m, values.zip(matrix.values).map {
+            it.first.zip(it.second).map {
+                function(it)
+            }.toTypedArray()
+        }.toTypedArray())
+    }
+
+    override fun plus(matrix: FractionMatrix): FractionMatrix = apply(matrix) { it.first + it.second }
+
+    override fun minus(matrix: FractionMatrix): FractionMatrix = apply(matrix) { it.first - it.second }
+
+    override fun times(matrix: FractionMatrix): FractionMatrix {
+        if (m != matrix.n || n != matrix.m) throw MatrixSizeException()
+
+        val newM = matrix.m
+
+        val newValues: Array<Array<Fraction>> = Array(n) { Array(newM) { Fraction() } }
+        (0 until n).forEach { i ->
+            (0 until m).forEach { j ->
+                (0 until newM).forEach { k ->
+                    newValues[i][j] += values[i][k] * matrix.values[k][j]
+                }
+            }
+        }
+        return FractionMatrix(n, newM, newValues)
+    }
+
+    override fun trans(): FractionMatrix {
+        val newValues: Array<Array<Fraction>> = Array(n) { Array(m) { Fraction() } }
+
+        (0 until n).forEach { i ->
+            (0 until m).forEach { j -> newValues[j][i] = values[i][j] }
+        }
+        return FractionMatrix(m, n, newValues)
+    }
+
+    override fun invert(): FractionMatrix {
+        if (n != m) throw MatrixSizeException()
+        val newValues: Array<Array<Fraction>> = Array(n) { Array(m) { Fraction() } }
+
+        val d = determinantFraction()
+        (0 until n).forEach { i ->
+            (0 until m).forEach { j ->
+                val value = subMatrix(i, j).determinant() / d
+                if ((i + j) % 2 == 0) {
+                    newValues[i][j] = value
+                } else {
+                    newValues[i][j] = -value
+                }
+            }
+        }
+
+        return FractionMatrix(n, m, newValues).trans()
+    }
+
+    override fun set(i: Int, j: Int, value: Double) {
+        values[i][j] = Fraction(value)
+    }
+
+    fun setFraction(i: Int, j: Int, value: Fraction) {
+        values[i][j] = value
+    }
+
+    fun getFraction(i: Int, j: Int): Fraction = Fraction(values[i][j])
+
+    override fun get(i: Int, j: Int): Double = values[i][j].toDouble()
+
+    override fun change(i: Int, j: Int, change: (Double) -> Double) {
+        set(i, j, change(get(i, j)))
+    }
+
+    override fun determinant(): Double = determinantFraction().toDouble()
+
+    fun determinantFraction(): Fraction = subMatrix().determinant()
+
+    override fun size(): Pair<Int, Int> = Pair(n, m)
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is FractionMatrix) return false
+        for (i in 0 until n) {
+            for (j in 0 until m) {
+                if (getFraction(i, j) != other.getFraction(i, j))
+                    return false
+            }
+        }
+        return true
+    }
+
 
     private fun subMatrix(): SubMatrix = SubMatrix(this, n, n, n)
 
