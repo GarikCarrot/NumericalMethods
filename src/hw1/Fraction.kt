@@ -3,6 +3,7 @@ package hw1
 import java.math.BigInteger
 
 class Fraction {
+
     private val numerator: BigInteger
     private val denominator: BigInteger
 

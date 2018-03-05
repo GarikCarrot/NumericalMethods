@@ -2,12 +2,10 @@ package hw1
 
 import java.util.*
 
-interface Getable<out V> {
-    fun determinant(): V
-    fun get(i: Int, j: Int): V
-}
 
 class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<FractionMatrix, Fraction>(n, m, values), Getable<Fraction> {
+
+    override fun construct(n: Int, m: Int, values: Array<Array<Fraction>>): FractionMatrix = FractionMatrix(n, m, values)
 
     constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> Fraction() }) }))
 
@@ -70,8 +68,6 @@ class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<Fr
 
         return FractionMatrix(n, m, newValues).trans()
     }
-
-    fun clone(): FractionMatrix = FractionMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
 
     override operator fun set(i: Int, j: Int, value: Fraction) {
         values[i][j] = value

@@ -1,6 +1,7 @@
 package hw1
 
 open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<DoubleMatrix, Double>(n, m, values), Getable<Double> {
+    override fun construct(n: Int, m: Int, values: Array<Array<Double>>): DoubleMatrix = DoubleMatrix(n, m, values)
 
     constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> 0.0 }) }))
     
@@ -62,8 +63,6 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
         return DoubleMatrix(n, m, newValues).trans()
     }
 
-    fun clone(): DoubleMatrix = DoubleMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
-
     override fun set(i: Int, j: Int, value: Double) {
         values[i][j] = value
     }
@@ -91,36 +90,14 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
 
     private fun subMatrix(wx: Int, wy: Int): SubMatrix = SubMatrix(this, wx, wy, n - 1)
 
-    private class SubMatrix {
-        private val parentM: DoubleMatrix?
-        private val parent: SubMatrix?
-        private val wx: Int
-        private val wy: Int
-        private val size: Int
-
-        constructor(parent: DoubleMatrix, wx: Int, wy: Int, size: Int) {
-            this.parentM = parent
-            this.parent = null
-            this.wx = wx
-            this.wy = wy
-            this.size = size
-        }
-
-        constructor(parent: SubMatrix, wx: Int, wy: Int, size: Int) {
-            this.parentM = null
-            this.parent = parent
-            this.wx = wx
-            this.wy = wy
-            this.size = size
-        }
-
-        private fun get(i: Int, j: Int): Double {
+    private class SubMatrix(private val parent: Getable<Double>, private val wx: Int, private val wy: Int, private val size: Int) : Getable<Double> {
+        override fun get(i: Int, j: Int): Double {
             val x = if (i < wx) i else i + 1
             val y = if (j < wy) j else j + 1
-            return parentM?.get(x, y) ?: parent!!.get(x, y)
+            return parent.get(x, y)
         }
 
-        fun determinant(): Double {
+        override fun determinant(): Double {
             if (size == 1) return get(0, 0)
             var result = 0.0
             for (i in 0 until size) {
