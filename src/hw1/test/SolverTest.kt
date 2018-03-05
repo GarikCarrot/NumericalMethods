@@ -2,6 +2,7 @@ package hw1.test
 
 import hw1.DoubleMatrix
 import hw1.MatrixReader
+import hw1.solvers.ConjugateGradientSolver
 import hw1.solvers.GaussianSolver
 import hw1.solvers.JacobiSolver
 import hw1.solvers.SeidelSolver
@@ -14,10 +15,8 @@ fun main(args: Array<String>) {
     val b = getMatrix("double3")
     val c = getMatrix("init")
     val result = getMatrix("result")
-//    assert(GaussianSolver.getSolve(a, b) == result)
-//    assert(JacobiSolver.getSolve(a, b, c) == result)
-//    assert(SeidelSolver.getSolve(a, b, c) == result)
-    GaussianSolver.getSolve(a, b)
-    JacobiSolver.getSolve(a, b, c)
-    SeidelSolver.getSolve(a, b, c)
+//    GaussianSolver.getSolve(a, b)
+//    JacobiSolver.getSolve(a, b, c)
+//    SeidelSolver.getSolve(a, b, c)
+    ConjugateGradientSolver.getSolve(a, b, c, 1e-6)
 }

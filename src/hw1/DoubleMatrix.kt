@@ -21,14 +21,14 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
     override fun minus(matrix: DoubleMatrix): DoubleMatrix = apply(matrix) { it.first - it.second }
 
     override fun times(matrix: DoubleMatrix): DoubleMatrix {
-        if (m != matrix.n || n != matrix.m) throw MatrixSizeException()
+        if (m != matrix.n) throw MatrixSizeException()
 
         val newM = matrix.m
 
         val newValues = Array(n) { Array(newM) { 0.0 } }
         (0 until n).forEach { i ->
-            (0 until m).forEach { j ->
-                (0 until newM).forEach { k ->
+            (0 until newM).forEach { j ->
+                (0 until m).forEach { k ->
                     newValues[i][j] += values[i][k] * matrix.values[k][j]
                 }
             }
@@ -47,7 +47,7 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
     }
 
     override fun trans(): DoubleMatrix {
-        val newValues = Array(n) { Array(m) { 0.0 } }
+        val newValues = Array(m) { Array(n) { 0.0 } }
 
         (0 until n).forEach { i ->
             (0 until m).forEach { j -> newValues[j][i] = values[i][j] }

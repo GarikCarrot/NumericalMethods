@@ -8,14 +8,14 @@ class ConjugateGradientSolver {
         fun getSolve(a0: DoubleMatrix, b0: DoubleMatrix, x0: DoubleMatrix, epsilon: Double): DoubleMatrix {
 
             var xkm = x0
-            var rkm = b0 - a0 * x0
+            var rkm = b0 - a0 * x0.trans()
             var zkm = rkm
 
             var k = 0
             while (true) {
                 k++
                 val ak = rkm.scalarTimes(rkm) / (a0 * zkm).scalarTimes(zkm)
-                val xk = xkm + zkm.multiply(ak)
+                val xk = (xkm.trans() + zkm.multiply(ak)).trans()
                 val rk = rkm - a0 * zkm.multiply(ak)
                 val bk = rk.scalarTimes(rk) / rkm.scalarTimes(rkm)
                 val zk = rk + zkm.multiply(bk)
@@ -29,7 +29,6 @@ class ConjugateGradientSolver {
             }
 
             return rkm
-
         }
     }
 }
