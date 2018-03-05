@@ -1,7 +1,7 @@
 package hw1
 
 
-interface Matrix<T>{
+interface Matrix<T, V> {
     operator fun plus(matrix: T): T
     operator fun minus(matrix: T): T
     operator fun times(matrix: T): T
@@ -9,10 +9,10 @@ interface Matrix<T>{
     fun trans(): T
     fun invert(): T
 
-    fun set(i: Int, j: Int, value: Double)
-    fun get(i: Int, j: Int): Double
-    fun change(i: Int, j: Int, change: (Double) -> Double)
-    fun determinant(): Double
+    fun set(i: Int, j: Int, value: V)
+    fun get(i: Int, j: Int): V
+    fun change(i: Int, j: Int, change: (V) -> V)
+    fun determinant(): V
 
     fun size(): Pair<Int, Int>
 }

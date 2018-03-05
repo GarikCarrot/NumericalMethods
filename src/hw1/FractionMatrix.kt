@@ -2,7 +2,7 @@ package hw1
 
 import java.math.BigInteger
 
-class FractionMatrix : Matrix<FractionMatrix> {
+class FractionMatrix : Matrix<FractionMatrix, FractionMatrix.Fraction> {
 
     class Fraction {
         private val numerator: BigInteger
@@ -156,7 +156,7 @@ class FractionMatrix : Matrix<FractionMatrix> {
         if (n != m) throw MatrixSizeException()
         val newValues: Array<Array<Fraction>> = Array(n) { Array(m) { Fraction() } }
 
-        val d = determinantFraction()
+        val d = determinant()
         (0 until n).forEach { i ->
             (0 until m).forEach { j ->
                 val value = subMatrix(i, j).determinant() / d
@@ -171,29 +171,15 @@ class FractionMatrix : Matrix<FractionMatrix> {
         return FractionMatrix(n, m, newValues).trans()
     }
 
-    fun clone(): FractionMatrix {
-        return FractionMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
-    }
+    fun clone(): FractionMatrix = FractionMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
 
-    override fun set(i: Int, j: Int, value: Double) {
-        values[i][j] = Fraction(value)
-    }
+    override operator fun set(i: Int, j: Int, value: Fraction) { values[i][j] = value }
 
-    fun setFraction(i: Int, j: Int, value: Fraction) {
-        values[i][j] = value
-    }
+    override operator fun get(i: Int, j: Int): Fraction = Fraction(values[i][j])
 
-    fun getFraction(i: Int, j: Int): Fraction = Fraction(values[i][j])
+    override fun change(i: Int, j: Int, change: (Fraction) -> Fraction) = set(i, j, change(get(i, j)))
 
-    override fun get(i: Int, j: Int): Double = values[i][j].toDouble()
-
-    override fun change(i: Int, j: Int, change: (Double) -> Double) {
-        set(i, j, change(get(i, j)))
-    }
-
-    override fun determinant(): Double = determinantFraction().toDouble()
-
-    fun determinantFraction(): Fraction = subMatrix().determinant()
+    override fun determinant(): Fraction = subMatrix().determinant()
 
     override fun size(): Pair<Int, Int> = Pair(n, m)
 
@@ -201,7 +187,7 @@ class FractionMatrix : Matrix<FractionMatrix> {
         if (other !is FractionMatrix) return false
         for (i in 0 until n) {
             for (j in 0 until m) {
-                if (getFraction(i, j) != other.getFraction(i, j))
+                if (this[i, j] != other[i, j])
                     return false
             }
         }
@@ -240,7 +226,7 @@ class FractionMatrix : Matrix<FractionMatrix> {
         private fun get(i: Int, j: Int): Fraction {
             val x = if (i < wx) i else i + 1
             val y = if (j < wy) j else j + 1
-            return parentM?.getFraction(x, y) ?: parent!!.get(x, y)
+            return parentM?.get(x, y) ?: parent!!.get(x, y)
         }
 
         fun determinant(): Fraction {

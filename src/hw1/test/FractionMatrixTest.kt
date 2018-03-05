@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     assert(a + b == sum)
     assert(a - b == sub)
     assert(a * b == mul)
-    assert(a.determinant() == 8.0)
+    assert(a.determinant() == FractionMatrix.Fraction(8.0))
     assert(a.trans() == trans)
     assert(a.invert() == invert)
 }
