@@ -1,15 +1,15 @@
 package hw1
 
-open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
+open class DoubleMatrix(private var n: Int, private var m: Int) : OLD_Matrix {
 
 
     private var values = Array(n) { DoubleArray(m) }
 
-    override fun plus(matrix: Matrix): Matrix = assign { it += matrix }
+    override fun plus(matrix: OLD_Matrix): OLD_Matrix = assign { it += matrix }
 
-    override fun minus(matrix: Matrix): Matrix = assign { it -= matrix }
+    override fun minus(matrix: OLD_Matrix): OLD_Matrix = assign { it -= matrix }
 
-    override fun times(matrix: Matrix) = assign { it *= matrix }
+    override fun times(matrix: OLD_Matrix) = assign { it *= matrix }
 
     private fun assign(v: (DoubleMatrix) -> Unit): DoubleMatrix {
         val result = DoubleMatrix(n, m)
@@ -18,7 +18,7 @@ open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         return result
     }
 
-    override fun plusAssign(matrix: Matrix) {
+    override fun plusAssign(matrix: OLD_Matrix) {
         for (i in 0 until n) {
             for (j in 0 until m) {
                 values[i][j] += matrix.get(i, j)
@@ -26,7 +26,7 @@ open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         }
     }
 
-    override fun minusAssign(matrix: Matrix) {
+    override fun minusAssign(matrix: OLD_Matrix) {
         for (i in 0 until n) {
             for (j in 0 until m) {
                 values[i][j] -= matrix.get(i, j)
@@ -34,7 +34,7 @@ open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         }
     }
 
-    override fun timesAssign(matrix: Matrix) {
+    override fun timesAssign(matrix: OLD_Matrix) {
         val nM = matrix.size().second
         if (size().second != matrix.size().first) throw MatrixSizeException()
         val nValues = Array(n) { DoubleArray(nM) }
@@ -48,7 +48,7 @@ open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         values = nValues
     }
 
-    override fun trans(): Matrix {
+    override fun trans(): OLD_Matrix {
         val result = DoubleMatrix(m, n)
         for (i in 0 until n) {
             for (j in 0 until m) {
@@ -58,7 +58,7 @@ open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         return result
     }
 
-    override fun invert(): Matrix {
+    override fun invert(): OLD_Matrix {
         if (n != m) throw MatrixSizeException()
         val result = DoubleMatrix(n, m)
         val d = determinant()

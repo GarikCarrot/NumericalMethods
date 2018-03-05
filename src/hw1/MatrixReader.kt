@@ -34,9 +34,9 @@ class MatrixReader {
                     val v = s[j]
                     if (v.contains("/")) {
                         val vs = v.split("/")
-                        matrix.setFraction(i, j, FractionMatrix.Fraction(vs[0], vs[1]))
+                        matrix.set(i, j, Fraction(vs[0], vs[1]))
                     } else {
-                        matrix.setFraction(i, j, FractionMatrix.Fraction(v.toDouble()))
+                        matrix.set(i, j, Fraction(v.toDouble()))
                     }
                 }
             }
