@@ -1,79 +1,68 @@
 package hw1
 
-open class DoubleMatrix(private var n: Int, private var m: Int) : OLD_Matrix {
+open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<DoubleMatrix, Double>(n, m, values), Getable<Double> {
 
+    constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> 0.0 }) }))
+    
+    override fun plus(matrix: DoubleMatrix): DoubleMatrix = apply(matrix) { it.first + it.second }
 
-    private var values = Array(n) { DoubleArray(m) }
+    override fun minus(matrix: DoubleMatrix): DoubleMatrix = apply(matrix) { it.first - it.second }
 
-    override fun plus(matrix: OLD_Matrix): OLD_Matrix = assign { it += matrix }
+    override fun times(matrix: DoubleMatrix): DoubleMatrix {
+        if (m != matrix.n || n != matrix.m) throw MatrixSizeException()
 
-    override fun minus(matrix: OLD_Matrix): OLD_Matrix = assign { it -= matrix }
+        val newM = matrix.m
 
-    override fun times(matrix: OLD_Matrix) = assign { it *= matrix }
-
-    private fun assign(v: (DoubleMatrix) -> Unit): DoubleMatrix {
-        val result = DoubleMatrix(n, m)
-        result += this
-        v(result)
-        return result
-    }
-
-    override fun plusAssign(matrix: OLD_Matrix) {
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                values[i][j] += matrix.get(i, j)
-            }
-        }
-    }
-
-    override fun minusAssign(matrix: OLD_Matrix) {
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                values[i][j] -= matrix.get(i, j)
-            }
-        }
-    }
-
-    override fun timesAssign(matrix: OLD_Matrix) {
-        val nM = matrix.size().second
-        if (size().second != matrix.size().first) throw MatrixSizeException()
-        val nValues = Array(n) { DoubleArray(nM) }
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                for (k in 0 until nM) {
-                    nValues[i][j] += get(i, k) * matrix.get(k, j)
+        val newValues = Array(n) { Array(newM) { 0.0 } }
+        (0 until n).forEach { i ->
+            (0 until m).forEach { j ->
+                (0 until newM).forEach { k ->
+                    newValues[i][j] += values[i][k] * matrix.values[k][j]
                 }
             }
         }
-        values = nValues
+        return DoubleMatrix(n, newM, newValues)
     }
 
-    override fun trans(): OLD_Matrix {
-        val result = DoubleMatrix(m, n)
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                result.values[j][i] = values[i][j]
-            }
+    override fun apply(matrix: DoubleMatrix, function: (Pair<Double, Double>) -> Double): DoubleMatrix {
+        if (n != matrix.n || m != matrix.m) throw MatrixSizeException()
+
+        return DoubleMatrix(n, m, values.zip(matrix.values).map {
+            it.first.zip(it.second).map {
+                function(it)
+            }.toTypedArray()
+        }.toTypedArray())
+    }
+    
+    override fun trans(): DoubleMatrix {
+        val newValues = Array(n) { Array(m) { 0.0 } }
+
+        (0 until n).forEach { i ->
+            (0 until m).forEach { j -> newValues[j][i] = values[i][j] }
         }
-        return result
+        return DoubleMatrix(m, n, newValues)
     }
 
-    override fun invert(): OLD_Matrix {
+    override fun invert(): DoubleMatrix {
         if (n != m) throw MatrixSizeException()
-        val result = DoubleMatrix(n, m)
+        val newValues = Array(n) { Array(m) { 0.0 } }
+
         val d = determinant()
-        for (i in 0 until n) {
-            for (j in 0 until m) {
+        (0 until n).forEach { i ->
+            (0 until m).forEach { j ->
                 val value = subMatrix(i, j).determinant() / d
                 if ((i + j) % 2 == 0) {
-                    result.values[i][j] = value
+                    newValues[i][j] = value
                 } else {
-                    result.values[i][j] = -value
+                    newValues[i][j] = -value
                 }
             }
         }
-        return result.trans()
+
+        return DoubleMatrix(n, m, newValues).trans()
     }
+
+    fun clone(): DoubleMatrix = DoubleMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
 
     override fun set(i: Int, j: Int, value: Double) {
         values[i][j] = value
@@ -86,8 +75,6 @@ open class DoubleMatrix(private var n: Int, private var m: Int) : OLD_Matrix {
     }
 
     override fun determinant(): Double = subMatrix().determinant()
-
-    override fun size(): Pair<Int, Int> = Pair(n, m)
 
     override fun equals(other: Any?): Boolean {
         if (other !is DoubleMatrix) return false

@@ -7,31 +7,9 @@ interface Getable<out V> {
     fun get(i: Int, j: Int): V
 }
 
-class FractionMatrix : Matrix<FractionMatrix, Fraction>, Getable<Fraction> {
+class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<FractionMatrix, Fraction>(n, m, values), Getable<Fraction> {
 
-    private val n: Int
-    private val m: Int
-
-    private val values: Array<Array<Fraction>>
-
-    constructor(n: Int, m: Int, values: Array<Array<Fraction>>) {
-        this.n = n
-        this.m = m
-        this.values = values
-    }
-
-    constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> Fraction() }) }));
-
-
-    private fun apply(matrix: FractionMatrix, function: (Pair<Fraction, Fraction>) -> Fraction): FractionMatrix {
-        if (n != matrix.n || m != matrix.m) throw MatrixSizeException()
-
-        return FractionMatrix(n, m, values.zip(matrix.values).map {
-            it.first.zip(it.second).map {
-                function(it)
-            }.toTypedArray()
-        }.toTypedArray())
-    }
+    constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> Fraction() }) }))
 
     override fun plus(matrix: FractionMatrix): FractionMatrix = apply(matrix) { it.first + it.second }
 
@@ -52,6 +30,18 @@ class FractionMatrix : Matrix<FractionMatrix, Fraction>, Getable<Fraction> {
         }
         return FractionMatrix(n, newM, newValues)
     }
+
+
+     override fun apply(matrix: FractionMatrix, function: (Pair<Fraction, Fraction>) -> Fraction): FractionMatrix {
+        if (n != matrix.n || m != matrix.m) throw MatrixSizeException()
+
+        return FractionMatrix(n, m, values.zip(matrix.values).map {
+            it.first.zip(it.second).map {
+                function(it)
+            }.toTypedArray()
+        }.toTypedArray())
+    }
+
 
     override fun trans(): FractionMatrix {
         val newValues: Array<Array<Fraction>> = Array(n) { Array(m) { Fraction() } }
@@ -92,8 +82,6 @@ class FractionMatrix : Matrix<FractionMatrix, Fraction>, Getable<Fraction> {
     override fun change(i: Int, j: Int, change: (Fraction) -> Fraction) = set(i, j, change(get(i, j)))
 
     override fun determinant(): Fraction = subMatrix().determinant()
-
-    override fun size(): Pair<Int, Int> = Pair(n, m)
 
     override fun equals(other: Any?): Boolean {
         if (other !is FractionMatrix) return false

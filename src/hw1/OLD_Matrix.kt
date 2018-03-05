@@ -1,20 +1,24 @@
 package hw1
 
 
-interface Matrix<T, V> {
-    operator fun plus(matrix: T): T
-    operator fun minus(matrix: T): T
-    operator fun times(matrix: T): T
+abstract class Matrix<T, V> (val n: Int, val m: Int, protected val values: Array<Array<V>>) {
 
-    fun trans(): T
-    fun invert(): T
+    abstract operator fun plus(matrix: T): T
+    abstract operator fun minus(matrix: T): T
+    abstract operator fun times(matrix: T): T
 
-    fun set(i: Int, j: Int, value: V)
-    fun get(i: Int, j: Int): V
-    fun change(i: Int, j: Int, change: (V) -> V)
-    fun determinant(): V
+    abstract fun trans(): T
+    abstract fun invert(): T
 
-    fun size(): Pair<Int, Int>
+    abstract fun set(i: Int, j: Int, value: V)
+    abstract fun get(i: Int, j: Int): V
+    abstract fun change(i: Int, j: Int, change: (V) -> V)
+    abstract fun determinant(): V
+
+    fun size(): Pair<Int, Int> = n to m
+
+    abstract fun apply(matrix: T, function: (Pair<V, V>) -> V): T
+
 }
 
 
