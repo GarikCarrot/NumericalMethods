@@ -77,6 +77,7 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
 
     override fun equals(other: Any?): Boolean {
         if (other !is DoubleMatrix) return false
+        if (size() != other.size()) return false
         for (i in 0 until n) {
             for (j in 0 until m) {
                 if (get(i, j) != other.get(i, j))
