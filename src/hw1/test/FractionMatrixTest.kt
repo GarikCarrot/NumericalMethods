@@ -1,5 +1,6 @@
 package hw1.test
 
+import hw1.Fraction
 import hw1.FractionMatrix
 import hw1.MatrixReader
 import java.io.File
@@ -18,7 +19,7 @@ fun main(args: Array<String>) {
     assert(a + b == sum)
     assert(a - b == sub)
     assert(a * b == mul)
-    assert(a.determinant() == FractionMatrix.Fraction(8.0))
+    assert(a.determinant() == Fraction(8.0))
     assert(a.trans() == trans)
     assert(a.invert() == invert)
 }
