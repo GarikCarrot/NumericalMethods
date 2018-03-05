@@ -5,7 +5,7 @@ import java.util.*
 
 class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<FractionMatrix, Fraction>(n, m, values), Getable<Fraction> {
 
-    override fun construct(n: Int, m: Int, values: Array<Array<Fraction>>): FractionMatrix = FractionMatrix(n, m, values)
+    override fun construct(n: Int, m: Int, values: List<Array<Fraction>>): FractionMatrix = FractionMatrix(n, m, values.toTypedArray())
 
     constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> Fraction() }) }))
 

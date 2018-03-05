@@ -2,7 +2,6 @@ package hw1.solvers
 
 import hw1.ConditionNumber
 import hw1.DoubleMatrix
-import hw1.Matrix
 import hw1.NoSolveException
 
 class JacobiSolver {

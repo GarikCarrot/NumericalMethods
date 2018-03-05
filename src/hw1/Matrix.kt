@@ -1,7 +1,6 @@
 package hw1
 
 
-
 abstract class Matrix<T : Matrix<T, V>, V>(val n: Int, val m: Int, protected val values: Array<Array<V>>) {
 
     abstract operator fun plus(matrix: T): T
@@ -20,9 +19,9 @@ abstract class Matrix<T : Matrix<T, V>, V>(val n: Int, val m: Int, protected val
 
     abstract fun apply(matrix: T, function: (Pair<V, V>) -> V): T
 
-    fun clone(): T = construct(n, m, values.map { it.copyOf() }.toTypedArray())
+    fun clone(): T = construct(n, m, values.map { it.copyOf() })
 
-    abstract fun construct(n: Int, m: Int, values: Array<Array<V>>) :T // ЖЭ - женерики
+    abstract fun construct(n: Int, m: Int, values: List<Array<V>>): T // ЖЭ - женерики
 }
 
 

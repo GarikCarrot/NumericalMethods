@@ -1,7 +1,7 @@
 package hw1
 
 open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<DoubleMatrix, Double>(n, m, values), Getable<Double> {
-    override fun construct(n: Int, m: Int, values: Array<Array<Double>>): DoubleMatrix = DoubleMatrix(n, m, values)
+    override fun construct(n: Int, m: Int, values: List<Array<Double>>): DoubleMatrix = DoubleMatrix(n, m, values.toTypedArray())
 
     constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> 0.0 }) }))
     
