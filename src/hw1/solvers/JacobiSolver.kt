@@ -7,10 +7,10 @@ import hw1.NoSolveException
 
 class JacobiSolver {
     companion object {
-        fun getSolve(a0: Matrix, b: Matrix, x0: Matrix): Matrix = getSolve(a0, b, x0, 1e-6)
+        fun getSolve(a0: DoubleMatrix, b: DoubleMatrix, x0: DoubleMatrix): DoubleMatrix = getSolve(a0, b, x0, 1e-6)
 
-        fun getSolve(a0: Matrix, b: Matrix, x0: Matrix, e: Double): Matrix {
-            val a = a0
+        fun getSolve(a0: DoubleMatrix, b: DoubleMatrix, x0: DoubleMatrix, e: Double): DoubleMatrix {
+            val a = a0.clone()
             val n = a.size().first
             var result = x0
             var nResult = DoubleMatrix(1, n)
