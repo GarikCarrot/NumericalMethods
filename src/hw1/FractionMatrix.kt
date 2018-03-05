@@ -4,6 +4,16 @@ import java.util.*
 
 
 class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<FractionMatrix, Fraction>(n, m, values), Getable<Fraction> {
+    override fun scalarTimes(matrix: FractionMatrix): Fraction {
+        return values
+                .zip(matrix.values)
+                .foldRight(Fraction()) { x, acc ->
+                    x.first.zip(x.second)
+                            .foldRight(Fraction()) { y, acc2 ->
+                                y.first * y.second + acc2
+                            } + acc
+                }
+    }
 
     override fun construct(n: Int, m: Int, values: List<Array<Fraction>>): FractionMatrix = FractionMatrix(n, m, values.toTypedArray())
 

@@ -1,10 +1,21 @@
 package hw1
 
 open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<DoubleMatrix, Double>(n, m, values), Getable<Double> {
+    override fun scalarTimes(matrix: DoubleMatrix): Double {
+        return values
+                .zip(matrix.values)
+                .foldRight(0.0) { x, acc ->
+                    x.first.zip(x.second)
+                            .foldRight(0.0) { y, acc2 ->
+                                y.first * y.second + acc2
+                            } + acc
+                }
+    }
+
     override fun construct(n: Int, m: Int, values: List<Array<Double>>): DoubleMatrix = DoubleMatrix(n, m, values.toTypedArray())
 
     constructor(n: Int, m: Int) : this(n, m, Array(n, { Array(m, { _ -> 0.0 }) }))
-    
+
     override fun plus(matrix: DoubleMatrix): DoubleMatrix = apply(matrix) { it.first + it.second }
 
     override fun minus(matrix: DoubleMatrix): DoubleMatrix = apply(matrix) { it.first - it.second }
@@ -34,7 +45,7 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
             }.toTypedArray()
         }.toTypedArray())
     }
-    
+
     override fun trans(): DoubleMatrix {
         val newValues = Array(n) { Array(m) { 0.0 } }
 
@@ -71,6 +82,16 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
 
     override fun change(i: Int, j: Int, change: (Double) -> Double) {
         set(i, j, change(get(i, j)))
+    }
+
+    fun multiply(by: Double): DoubleMatrix {
+        val newValues = Array(n) { Array(m) { 0.0 } }
+        (0 until n).forEach { i ->
+            (0 until m).forEach {j ->
+                change(i, j) { it * by}
+            }
+        }
+        return DoubleMatrix(n, m, newValues)
     }
 
     override fun determinant(): Double = subMatrix().determinant()

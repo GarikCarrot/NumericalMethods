@@ -6,6 +6,16 @@ abstract class Matrix<T : Matrix<T, V>, V>(val n: Int, val m: Int, protected val
     abstract operator fun plus(matrix: T): T
     abstract operator fun minus(matrix: T): T
     abstract operator fun times(matrix: T): T
+    abstract fun scalarTimes(matrix: T): V
+
+    @Suppress("UNCHECKED_CAST")
+    fun pow(pow: Int): T {
+        var q = this
+        (0 until pow).forEach {
+            q *= this as T
+        }
+        return q as T
+    }
 
     abstract fun trans(): T
     abstract fun invert(): T
