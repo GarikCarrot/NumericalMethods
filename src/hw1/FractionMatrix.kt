@@ -171,6 +171,10 @@ class FractionMatrix : Matrix<FractionMatrix> {
         return FractionMatrix(n, m, newValues).trans()
     }
 
+    fun clone(): FractionMatrix {
+        return FractionMatrix(n, m, values.map { it.copyOf() }.toTypedArray())
+    }
+
     override fun set(i: Int, j: Int, value: Double) {
         values[i][j] = Fraction(value)
     }
