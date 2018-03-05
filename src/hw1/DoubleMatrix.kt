@@ -1,17 +1,17 @@
 package hw1
 
-class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
+open class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
 
 
     private var values = Array(n) { DoubleArray(m) }
 
     override fun plus(matrix: Matrix): Matrix = assign { it += matrix }
 
-    override fun minus(matrix: Matrix): Matrix = assign { it -= matrix}
+    override fun minus(matrix: Matrix): Matrix = assign { it -= matrix }
 
     override fun times(matrix: Matrix) = assign { it *= matrix }
 
-    private fun assign(v: (DoubleMatrix) -> Unit) : DoubleMatrix {
+    private fun assign(v: (DoubleMatrix) -> Unit): DoubleMatrix {
         val result = DoubleMatrix(n, m)
         result += this
         v(result)
@@ -49,26 +49,30 @@ class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
     }
 
     override fun trans(): Matrix {
-        val nValues = Array(m) { DoubleArray(n) }
+        val result = DoubleMatrix(m, n)
         for (i in 0 until n) {
             for (j in 0 until m) {
-                nValues[j][i] = values[i][j]
-            }
-        }
-        values = nValues
-        n = m.also { m = n } //swap
-        return this
-    }
-
-    override fun invert(): Matrix {
-        val result = trans() as DoubleMatrix
-        val d = determinant()
-        for (i in 0 until n) {
-            for (j in 0 until m) {
-                result.values[i][j] *= d
+                result.values[j][i] = values[i][j]
             }
         }
         return result
+    }
+
+    override fun invert(): Matrix {
+        if (n != m) throw MatrixSizeException()
+        val result = DoubleMatrix(n, m)
+        val d = determinant()
+        for (i in 0 until n) {
+            for (j in 0 until m) {
+                val value = subMatrix(i, j).determinant() / d
+                if ((i + j) % 2 == 0) {
+                    result.values[i][j] = value
+                } else {
+                    result.values[i][j] = -value
+                }
+            }
+        }
+        return result.trans()
     }
 
     override fun set(i: Int, j: Int, value: Double) {
@@ -81,20 +85,7 @@ class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         set(i, j, change(get(i, j)))
     }
 
-    override fun determinant(): Double {
-        if (n != m) throw MatrixSizeException()
-        var result = 0.0
-        for (i in 0 until n) {
-            var a = 1.0
-            var b = 1.0
-            for (j in 0 until n) {
-                a *= get(i, (n + j + i) % n)
-                b *= get(i, (n + j - i) % n)
-            }
-            result += a - b
-        }
-        return result
-    }
+    override fun determinant(): Double = subMatrix().determinant()
 
     override fun size(): Pair<Int, Int> = Pair(n, m)
 
@@ -109,4 +100,48 @@ class DoubleMatrix(private var n: Int, private var m: Int) : Matrix {
         return true
     }
 
+    private fun subMatrix(): SubMatrix = SubMatrix(this, n, n, n)
+
+    private fun subMatrix(wx: Int, wy: Int): SubMatrix = SubMatrix(this, wx, wy, n - 1)
+
+    private class SubMatrix {
+        private val parentM: DoubleMatrix?
+        private val parent: SubMatrix?
+        private val wx: Int
+        private val wy: Int
+        private val size: Int
+
+        constructor(parent: DoubleMatrix, wx: Int, wy: Int, size: Int) {
+            this.parentM = parent
+            this.parent = null
+            this.wx = wx
+            this.wy = wy
+            this.size = size
+        }
+
+        constructor(parent: SubMatrix, wx: Int, wy: Int, size: Int) {
+            this.parentM = null
+            this.parent = parent
+            this.wx = wx
+            this.wy = wy
+            this.size = size
+        }
+
+        private fun get(i: Int, j: Int): Double {
+            val x = if (i < wx) i else i + 1
+            val y = if (j < wy) j else j + 1
+            return parentM?.get(x, y) ?: parent!!.get(x, y)
+        }
+
+        fun determinant(): Double {
+            if (size == 1) return get(0, 0)
+            var result = 0.0
+            for (i in 0 until size) {
+                val d = SubMatrix(this, i, 0, size - 1).determinant()
+                if (i % 2 == 0) result += get(i, 0) * d
+                else result -= get(i, 0) * d
+            }
+            return result
+        }
+    }
 }

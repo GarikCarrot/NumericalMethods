@@ -1,14 +1,14 @@
 package hw1.test
 
-import hw1.DoubleMatrix
+import hw1.FractionMatrix
 import hw1.MatrixReader
 import java.io.File
 
-private fun getMatrix(file: String): DoubleMatrix = MatrixReader.getDoubleMatrix(File("res/double/$file.txt"))
+private fun getMatrix(file: String): FractionMatrix = MatrixReader.getFractionMatrix(File("res/fraction/$file.txt"))
 
 fun main(args: Array<String>) {
-    val a = getMatrix("double1")
-    val b = getMatrix("double2")
+    val a = getMatrix("fraction1")
+    val b = getMatrix("fraction2")
     val sum = getMatrix("sum")
     val sub = getMatrix("sub")
     val mul = getMatrix("mul")
