@@ -11,6 +11,9 @@ fun main(args: Array<String>) {
     for (i in 0 until n) {
         for (j in 0 until n) {
             //d2
+            val a = (Math.random() * 100).toInt()
+            val b = (Math.random() * 100).toInt()
+            d2.print("$a.")
         }
     }
 }
