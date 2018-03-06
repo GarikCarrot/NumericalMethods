@@ -115,7 +115,7 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
     private fun subMatrix(wx: Int, wy: Int): SubMatrix = SubMatrix(this, wx, wy, n - 1)
 
     override fun toString(): String {
-        return "[${n}x${m}]\n" + Arrays.deepToString(values)
+        return  values.fold("[${n}x${m}]") {acc, doubles -> "$acc\n${Arrays.deepToString(doubles)}"}
     }
 
     private class SubMatrix(private val parent: Getable<Double>, private val wx: Int, private val wy: Int, private val size: Int) : Getable<Double> {

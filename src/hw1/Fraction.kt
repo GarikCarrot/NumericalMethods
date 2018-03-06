@@ -77,7 +77,8 @@ class Fraction {
 
     fun toDouble(): Double = (numerator / denominator).toDouble()
 
-    override fun toString(): String = numerator.toString() + "/" + denominator.toString()
+//    override fun toString(): String = "~${(numerator.toDouble() / denominator.toDouble())}"
+    override fun toString(): String = "$numerator/$denominator"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -95,5 +96,9 @@ class Fraction {
         var result = numerator.hashCode()
         result = 31 * result + denominator.hashCode()
         return result
+    }
+
+    fun abs() : Fraction {
+        return Fraction(numerator.abs(), denominator)
     }
 }

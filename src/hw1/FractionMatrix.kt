@@ -24,14 +24,14 @@ class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<Fr
     override fun minus(matrix: FractionMatrix): FractionMatrix = apply(matrix) { it.first - it.second }
 
     override fun times(matrix: FractionMatrix): FractionMatrix {
-        if (m != matrix.n || n != matrix.m) throw MatrixSizeException()
+        if (m != matrix.n) throw MatrixSizeException()
 
         val newM = matrix.m
 
-        val newValues: Array<Array<Fraction>> = Array(n) { Array(newM) { Fraction() } }
+        val newValues = Array(n) { Array(newM) { Fraction() } }
         (0 until n).forEach { i ->
-            (0 until m).forEach { j ->
-                (0 until newM).forEach { k ->
+            (0 until newM).forEach { j ->
+                (0 until m).forEach { k ->
                     newValues[i][j] += values[i][k] * matrix.values[k][j]
                 }
             }
@@ -98,6 +98,20 @@ class FractionMatrix(n: Int, m: Int, values: Array<Array<Fraction>>) : Matrix<Fr
             }
         }
         return true
+    }
+
+    fun multiply(by: Fraction): FractionMatrix {
+        val clone = clone()
+        (0 until n).forEach { i ->
+            (0 until m).forEach {j ->
+                clone.change(i, j) { it * by}
+            }
+        }
+        return clone
+    }
+
+    override fun toString(): String {
+        return  values.fold("[${n}x${m}]") {acc, doubles -> "$acc\n${Arrays.deepToString(doubles)}"}
     }
 
 

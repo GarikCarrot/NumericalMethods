@@ -21,15 +21,15 @@ class ConditionNumber {
         }
 
         fun getNorm(matrix: FractionMatrix) : Double {
-            var result = Fraction()
+            var result = 0.0
             for (i in 0 until matrix.size().first) {
+                var sum = Fraction()
                 for (j in 0 until matrix.size().second) {
-                    var v = matrix.get(i, j)
-                    v *= v
-                    result += v
+                    sum += matrix.get(i, j).abs()
                 }
+                result = Math.max(sum.toDouble(), result)
             }
-            return Math.sqrt(result.toDouble())
+            return result
         }
     }
 }
