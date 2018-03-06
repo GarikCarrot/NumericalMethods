@@ -13,8 +13,10 @@ fun main(args: Array<String>) {
             //d2
             val a = (Math.random() * 100).toInt()
             val b = (Math.random() * 100).toInt()
-            d2.print("$a.")
+            d2.print("$a.$b ")
         }
+        if (i != n - 1) d2.println()
     }
+    d2.close()
 }
 
