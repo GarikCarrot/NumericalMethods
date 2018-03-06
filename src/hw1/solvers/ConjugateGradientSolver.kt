@@ -31,7 +31,7 @@ class ConjugateGradientSolver {
                     break
             }
 
-            return rkm
+            return xkm
         }
     }
 }

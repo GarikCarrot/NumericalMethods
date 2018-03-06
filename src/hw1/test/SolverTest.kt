@@ -8,6 +8,22 @@ import hw1.solvers.JacobiSolver
 import hw1.solvers.SeidelSolver
 import java.io.File
 
+private fun solve(s: String, f: () -> DoubleMatrix) {
+    try {
+        print("$s: ")
+        printResult(f())
+    } catch (e: Exception) {
+        println(s + e.toString())
+    }
+}
+
+private fun solveAll(a: DoubleMatrix, b: DoubleMatrix, c: DoubleMatrix) {
+    solve("G") { GaussianSolver.getSolve(a, b) }
+    solve("J") { JacobiSolver.getSolve(a, b, c) }
+    solve("S") { SeidelSolver.getSolve(a, b, c) }
+    solve("C") { ConjugateGradientSolver.getSolve(a, b, c, 1e-6) }
+}
+
 private fun getMatrix(file: String): DoubleMatrix = MatrixReader.getDoubleMatrix(File("res/double/$file.txt"))
 
 private fun printResult(matrix: DoubleMatrix) {
@@ -21,8 +37,5 @@ fun main(args: Array<String>) {
     val a = getMatrix("double1")
     val b = getMatrix("double3")
     val c = getMatrix("init")
-    printResult(GaussianSolver.getSolve(a, b))
-    printResult(JacobiSolver.getSolve(a, b, c))
-    printResult(SeidelSolver.getSolve(a, b, c))
-    printResult(ConjugateGradientSolver.getSolve(a, b, c, 1e-6))
+    solveAll(a, b, c)
 }
