@@ -27,8 +27,6 @@ class ConjugateGradientSolver {
                 pkm = pk
 
                 val d = ConditionNumber.getNorm(rk) / ConditionNumber.getNorm(b0)
-                println("$d")
-                Thread.sleep(500)
                 if (d < epsilon)
                     break
             }
