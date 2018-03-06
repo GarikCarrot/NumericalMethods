@@ -1,3 +1,3 @@
 package hw1
 
-class NoSolveException : Exception()
+class NoSolveException(override val message: String? = null) : Exception(message)

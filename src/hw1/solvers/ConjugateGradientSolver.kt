@@ -2,10 +2,12 @@ package hw1.solvers
 
 import hw1.ConditionNumber
 import hw1.DoubleMatrix
+import hw1.NoSolveException
 
 class ConjugateGradientSolver {
     companion object {
         fun getSolve(a0: DoubleMatrix, b0: DoubleMatrix, x0: DoubleMatrix, epsilon: Double): DoubleMatrix {
+            if (a0.determinant() < 0 || a0 != a0.trans()) throw NoSolveException("Doesn't satisfy condition")
 
             var xkm = x0
             var rkm = b0 - a0 * x0
