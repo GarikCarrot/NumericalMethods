@@ -10,7 +10,7 @@ class GaussianSolver {
             val a = a0.clone()
             val b = b0.clone()
             val n = a.size().first
-            val result = DoubleMatrix(1, n)
+            val result = DoubleMatrix(n, 1)
             for (step in 0 until n - 1) {
                 val t = a.get(step, step)
                 for (i in step + 1 until n) {
@@ -24,10 +24,10 @@ class GaussianSolver {
             for (step in n - 1 downTo 0) {
                 var sum = 0.0
                 for (i in step + 1 until n) {
-                    sum -= a.get(step, i) * result.get(0, i)
+                    sum -= a.get(step, i) * result.get(i, 0)
                 }
                 sum += b.get(step, 0)
-                result.set(0, step, sum / a.get(step, step))
+                result.set(step, 0, sum / a.get(step, step))
             }
             return result
         }

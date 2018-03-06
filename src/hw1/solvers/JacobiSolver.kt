@@ -17,21 +17,21 @@ class JacobiSolver {
             val d = a0 - r
             val q = ConditionNumber.getNorm(d.invert() * r)
             var result = x0
-            var nResult = DoubleMatrix(1, n)
+            var nResult = DoubleMatrix(n, 1)
             if (q > 1) throw NoSolveException()
             while (true) {
                 for (i in 0 until n) {
                     var s = 0.0
                     for (j in 0 until n) {
                         if (i != j)
-                            s += a0.get(i, j) * result.get(0, j)
+                            s += a0.get(i, j) * result.get(j, 0)
                     }
-                    nResult.set(0, i, (b.get(i, 0) - s) / a0.get(i, i))
+                    nResult.set(i, 0, (b.get(i, 0) - s) / a0.get(i, i))
                 }
                 val cond = ConditionNumber.getNorm(result - nResult)
                 if (cond / (1 - q) < e) break
                 result = nResult
-                nResult = DoubleMatrix(1, n)
+                nResult = DoubleMatrix(n, 1)
             }
             return nResult
         }

@@ -10,13 +10,19 @@ import java.io.File
 
 private fun getMatrix(file: String): DoubleMatrix = MatrixReader.getDoubleMatrix(File("res/double/$file.txt"))
 
+private fun printResult(matrix: DoubleMatrix) {
+    for (i in 0 until matrix.size().first) {
+        print(matrix.get(i, 0).toString() + " ")
+    }
+    println()
+}
+
 fun main(args: Array<String>) {
     val a = getMatrix("double1")
     val b = getMatrix("double3")
     val c = getMatrix("init")
-    val result = getMatrix("result")
-//    GaussianSolver.getSolve(a, b)
-//    JacobiSolver.getSolve(a, b, c)
-//    SeidelSolver.getSolve(a, b, c)
-    ConjugateGradientSolver.getSolve(a, b, c, 1e-6)
+    printResult(GaussianSolver.getSolve(a, b))
+    printResult(JacobiSolver.getSolve(a, b, c))
+    printResult(SeidelSolver.getSolve(a, b, c))
+    printResult(ConjugateGradientSolver.getSolve(a, b, c, 1e-6))
 }

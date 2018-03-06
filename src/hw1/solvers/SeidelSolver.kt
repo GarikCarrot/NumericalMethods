@@ -13,7 +13,7 @@ class SeidelSolver {
             val l = a0.clone()
             val e = DoubleMatrix(n, n)
             for (i in 0 until n) {
-                for (j in i until n) {
+                for (j in i + 1 until n) {
                     l.set(i, j, 0.0)
                 }
                 e.set(i, i, 1.0)
@@ -21,23 +21,23 @@ class SeidelSolver {
             val r = a0 - l
             val q = ConditionNumber.getNorm((e - l).invert() * r)
             var result = x0
-            var nResult = DoubleMatrix(1, n)
+            var nResult = DoubleMatrix(n, 1)
             if (q > 1) throw NoSolveException()
             while (true) {
                 for (i in 0 until n) {
                     var s = 0.0
                     for (j in 0 until i) {
-                        s += a0.get(i, j) * nResult.get(0, j)
+                        s += a0.get(i, j) * nResult.get(j, 0)
                     }
                     for (j in i + 1 until n) {
-                        s += a0.get(i, j) * result.get(0, j)
+                        s += a0.get(i, j) * result.get(j, 0)
                     }
-                    nResult.set(0, i, (b.get(i, 0) - s) / a0.get(i, i))
+                    nResult.set(i, 0, (b.get(i, 0) - s) / a0.get(i, i))
                 }
                 val cond = ConditionNumber.getNorm(result - nResult)
                 if (cond < eps) break
                 result = nResult
-                nResult = DoubleMatrix(1, n)
+                nResult = DoubleMatrix(n, 1)
             }
             return nResult
         }
