@@ -9,22 +9,25 @@ class ConjugateGradientSolver {
 
             var xkm = x0
             var rkm = b0 - a0 * x0.trans()
-            var zkm = rkm
+            var pkm = rkm
 
             var k = 0
             while (true) {
                 k++
-                val ak = rkm.scalarTimes(rkm) / (a0 * zkm).scalarTimes(zkm)
-                val xk = (xkm.trans() + zkm.multiply(ak)).trans()
-                val rk = rkm - a0 * zkm.multiply(ak)
+                val ak = rkm.scalarTimes(rkm) / (a0 * pkm).scalarTimes(pkm)
+                val xk = (xkm.trans() + pkm.multiply(ak)).trans()
+                val rk = rkm - a0 * pkm.multiply(ak)
                 val bk = rk.scalarTimes(rk) / rkm.scalarTimes(rkm)
-                val zk = rk + zkm.multiply(bk)
+                val pk = rk + pkm.multiply(bk)
 
                 xkm = xk
                 rkm = rk
-                zkm = zk
+                pkm = pk
 
-                if (ConditionNumber.getNorm(rk) / ConditionNumber.getNorm(b0) < epsilon)
+                val d = ConditionNumber.getNorm(rk) / ConditionNumber.getNorm(b0)
+                println("$d")
+                Thread.sleep(500)
+                if (d < epsilon)
                     break
             }
 

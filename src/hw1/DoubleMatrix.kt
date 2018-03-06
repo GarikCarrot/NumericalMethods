@@ -1,5 +1,7 @@
 package hw1
 
+import java.util.*
+
 open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<DoubleMatrix, Double>(n, m, values), Getable<Double> {
     override fun scalarTimes(matrix: DoubleMatrix): Double {
         return values
@@ -85,13 +87,13 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
     }
 
     fun multiply(by: Double): DoubleMatrix {
-        val newValues = Array(n) { Array(m) { 0.0 } }
+        val clone = clone()
         (0 until n).forEach { i ->
             (0 until m).forEach {j ->
-                change(i, j) { it * by}
+                clone.change(i, j) { it * by}
             }
         }
-        return DoubleMatrix(n, m, newValues)
+        return clone
     }
 
     override fun determinant(): Double = subMatrix().determinant()
@@ -111,6 +113,10 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
     private fun subMatrix(): SubMatrix = SubMatrix(this, n, n, n)
 
     private fun subMatrix(wx: Int, wy: Int): SubMatrix = SubMatrix(this, wx, wy, n - 1)
+
+    override fun toString(): String {
+        return "[${n}x${m}]\n" + Arrays.deepToString(values)
+    }
 
     private class SubMatrix(private val parent: Getable<Double>, private val wx: Int, private val wy: Int, private val size: Int) : Getable<Double> {
         override fun get(i: Int, j: Int): Double {
