@@ -76,11 +76,11 @@ open class DoubleMatrix(n: Int, m: Int, values: Array<Array<Double>>) : Matrix<D
         return DoubleMatrix(n, m, newValues).trans()
     }
 
-    override fun set(i: Int, j: Int, value: Double) {
+    override operator fun set(i: Int, j: Int, value: Double) {
         values[i][j] = value
     }
 
-    override fun get(i: Int, j: Int): Double = values[i][j]
+    override operator fun get(i: Int, j: Int): Double = values[i][j]
 
     override fun change(i: Int, j: Int, change: (Double) -> Double) {
         set(i, j, change(get(i, j)))
